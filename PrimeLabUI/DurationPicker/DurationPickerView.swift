@@ -68,7 +68,12 @@ struct DurationPicker: View {
                 }
             }
         }
-        .onChange(of: vm.duration) { _, newValue in
+        .onAppear {
+            self.duration = vm.duration
+            print(vm.selectedSecond)
+        }
+        .onChange(of: vm.duration) { oldValue, newValue in
+            print("onchange", oldValue, newValue)
             self.duration = newValue
         }
     }
@@ -140,7 +145,7 @@ fileprivate struct PreviewMinimum: View {
     
     @State var duration1: TimeInterval = 3.0
     @State var duration2: TimeInterval = 3.0
-    @State var duration3: TimeInterval = 3.0
+    @State var duration3: TimeInterval = 0.0
     
     let minimumDuration = 14
     
@@ -164,6 +169,8 @@ fileprivate struct PreviewMinimum: View {
                 .padding(.bottom)
 
         }
-
+        #if os(iOS)
+        .pickerStyle(.wheel)
+        #endif
     }
 }

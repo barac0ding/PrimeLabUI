@@ -20,7 +20,6 @@ class DurationPickerViewModel {
     
     let format: DurationPickerFormat
     private let minimumDuration: Int
-    #warning("do minimum duration")
     
     // MARK: - Picker selections
     
@@ -33,9 +32,28 @@ class DurationPickerViewModel {
     var selectedMinute = 0 {
         didSet {
             updateSecondConstraint()
+            
+            if format == .long {
+                if selectedMinute < minimumMinute {
+                    selectedMinute = minimumMinute
+                }
+            }
         }
     }
-    var selectedSecond = 0
+    var selectedSecond = 0 {
+        didSet {
+            switch format {
+            case .short, .full:
+                if selectedSecond < minimumSecond {
+                    selectedSecond = minimumSecond
+                }
+            case .long:
+                if selectedSecond != 0 {
+                    selectedSecond = 0
+                }
+            }
+        }
+    }
     
     // MARK: - Picker constraints
     
@@ -69,17 +87,15 @@ extension DurationPickerViewModel {
         guard format == .long else {return }
         
             if duration < 60 {
-                selectedMinute = 1
+                selectedMinute = minimumMinute
                 selectedSecond = 0
             }
     }
     
     private func updateMinuteConstraint() {
-        print("start F", selectedMinute)
         guard format == .long else { return }
         
-        minimumMinute = selectedHour == 0 ? 1 : 0
-        print("end F", selectedMinute)
+        minimumMinute = selectedHour == 0 ? minimumDuration : 0
         
         if selectedMinute <= minimumMinute {
             selectedMinute = minimumMinute
@@ -89,7 +105,7 @@ extension DurationPickerViewModel {
     private func updateSecondConstraint() {
         guard format != .long else { return }
         
-        minimumSecond = (selectedHour == 0 && selectedMinute == 0) ? 1 : 0
+        minimumSecond = (selectedHour == 0 && selectedMinute == 0) ? minimumDuration : 0
         
         if selectedSecond <= minimumSecond {
             selectedSecond = minimumSecond
@@ -127,9 +143,18 @@ extension DurationPickerViewModel {
             minimumMinute = minimumDuration
             minimumSecond = 0
             
+            if duration < TimeInterval(minimumMinute) {
+                selectedMinute = minimumMinute
+                selectedSecond = 0
+            }
+            
         case .short, .full:
             minimumMinute = 0
             minimumSecond = minimumDuration
+            
+            if duration < TimeInterval(minimumSecond) {
+                selectedSecond = minimumSecond
+            }
         }
     }
 }
