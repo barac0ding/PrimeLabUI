@@ -68,7 +68,6 @@ struct DurationPicker: View {
                 }
             }
         }
-        .pickerStyle(.wheel)
         .onChange(of: vm.duration) { _, newValue in
             self.duration = newValue
         }
@@ -98,21 +97,17 @@ extension DurationPicker {
 }
 
 
-//#Preview("Minimum Time") {
-//    NavigationStack {
-//        DurationPicker(duration: .constant(11.0), format: .short, minimumTime: 10)
-//        DurationPicker(duration: .constant(11.0), format: .long, minimumTime: 10)
-//        DurationPicker(duration: .constant(11.0), format: .full, minimumTime: 10)
-//    }
-//}
+#Preview("Minimum Time") {
+    PreviewMinimum()
+}
 
 #Preview("NO Minimum Time") {
     
-    Preview()
+    PreviewNoMinimum()
 }
 
 
-fileprivate struct Preview: View {
+fileprivate struct PreviewNoMinimum: View {
     
     @State var duration1: TimeInterval = 3.0
     @State var duration2: TimeInterval = 3.0
@@ -135,6 +130,37 @@ fileprivate struct Preview: View {
             Divider()
             Text(Duration.seconds(duration3), format: .time(pattern: .hourMinuteSecond))
             DurationPicker(duration: $duration3, format: .full)
+                .padding(.bottom)
+
+        }
+    }
+}
+
+fileprivate struct PreviewMinimum: View {
+    
+    @State var duration1: TimeInterval = 3.0
+    @State var duration2: TimeInterval = 3.0
+    @State var duration3: TimeInterval = 3.0
+    
+    let minimumDuration = 14
+    
+    var body: some View {
+        
+        
+        Group {
+            Divider()
+            Text(Duration.seconds(duration1), format: .time(pattern: .hourMinuteSecond))
+            DurationPicker(duration: $duration1, format: .short, minimumDuration: minimumDuration)
+                .padding(.bottom)
+            Divider()
+
+            Text(Duration.seconds(duration2), format: .time(pattern: .hourMinuteSecond))
+            DurationPicker(duration: $duration2, format: .long, minimumDuration: minimumDuration)
+                .padding(.bottom)
+            
+            Divider()
+            Text(Duration.seconds(duration3), format: .time(pattern: .hourMinuteSecond))
+            DurationPicker(duration: $duration3, format: .full, minimumDuration: minimumDuration)
                 .padding(.bottom)
 
         }
